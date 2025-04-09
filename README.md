@@ -2,6 +2,9 @@
 ## Overview
 You are working on an invoice management system that allows CRUD operations on invoices and their line items. The initial structure and some methods have been implemented, but you need to complete three methods related to invoice line management.
 Your Task
+
+## Note: You must have the SDK for .NET 9 installed
+
 ## Complete the implementation of the following three methods in the InvoiceQuery class:
 ### 1. CreateLineAsync(int invoiceId, InvoiceLineMutation mutation)
 This method should:
