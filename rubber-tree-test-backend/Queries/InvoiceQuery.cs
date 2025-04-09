@@ -8,9 +8,9 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 {
     private readonly int _delay = 100; // Simulate async work
 
-    public async Task<Invoice?> GetInvoiceByIdAsync(int id)
+    public async Task<InvoiceHeader?> GetInvoiceByIdAsync(int id)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
@@ -18,9 +18,9 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
         return invoices.FirstOrDefault(i => i.Id == id);
     }
 
-    public async Task<List<Invoice>> GetAllInvoicesAsync()
+    public async Task<List<InvoiceHeader>> GetAllInvoicesAsync()
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
@@ -30,12 +30,12 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
     public async Task<int> CreateAsync(InvoiceMutation mutation)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice invoice = new()
+        InvoiceHeader invoice = new()
         {
             Id = invoices.Count > 0 ? invoices.Max(i => i.Id) + 1 : 1,
             CustomerName = mutation.CustomerName,
@@ -52,12 +52,12 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
     public async Task UpdateAsync(int invoiceId, InvoiceMutation mutation)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice? existingInvoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
+        InvoiceHeader? existingInvoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
         if (existingInvoice is not null)
         {
             existingInvoice.CustomerName = mutation.CustomerName;
@@ -70,12 +70,12 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
     public async Task DeleteAsync(int invoiceId)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice? invoiceToDelete = invoices.FirstOrDefault(i => i.Id == invoiceId);
+        InvoiceHeader? invoiceToDelete = invoices.FirstOrDefault(i => i.Id == invoiceId);
         if (invoiceToDelete is not null)
         {
             invoices.Remove(invoiceToDelete);
@@ -84,14 +84,31 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
         await jsonDataService.SaveDataAsync("invoices.json", invoices);
     }
 
-    public async Task<int?> CreateLineAsync(int invoiceId, InvoiceLineMutation mutation)
+    public async Task<InvoiceLine?> GetInvoiceLineByInvoiceIdAndLineNumber(int invoiceId, int lineNumber)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
+        InvoiceHeader? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
+
+        if (invoice is not null)
+        {
+            return invoice.Items?.FirstOrDefault(i => i.LineNumber == lineNumber);
+        }
+
+        return null;
+    }
+
+    public async Task<int?> CreateLineAsync(int invoiceId, InvoiceLineMutation mutation)
+    {
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
+
+        // Simulate a database call
+        await Task.Delay(_delay); // Simulate async work
+
+        InvoiceHeader? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
 
         if (invoice is not null)
         {
@@ -104,12 +121,12 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
     public async Task UpdateLineAsync(int invoiceId, int lineNumber, InvoiceLineMutation mutation)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
+        InvoiceHeader? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
 
         if (invoice is not null)
         {
@@ -120,12 +137,12 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
     public async Task DeleteLineAsync(int invoiceId, int lineNumber)
     {
-        List<Invoice> invoices = await jsonDataService.GetDataAsync<Invoice>("invoices.json");
+        List<InvoiceHeader> invoices = await jsonDataService.GetDataAsync<InvoiceHeader>("invoices.json");
 
         // Simulate a database call
         await Task.Delay(_delay); // Simulate async work
 
-        Invoice? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
+        InvoiceHeader? invoice = invoices.FirstOrDefault(i => i.Id == invoiceId);
 
         if (invoice is not null)
         {

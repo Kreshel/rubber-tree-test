@@ -13,9 +13,9 @@ public class InvoiceController(IJsonDataService jsonDataService) : ControllerBas
     private readonly InvoiceQuery _invoiceQuery = new(jsonDataService);
 
     [HttpGet("{invoiceId}")]
-    public async Task<ActionResult<Invoice>> GetInvoiceById(int invoiceId)
+    public async Task<ActionResult<InvoiceHeader>> GetInvoiceById(int invoiceId)
     {
-        Invoice? invoice = await _invoiceQuery.GetInvoiceByIdAsync(invoiceId);
+        InvoiceHeader? invoice = await _invoiceQuery.GetInvoiceByIdAsync(invoiceId);
         if (invoice is null)
         {
             return NotFound();
@@ -25,7 +25,7 @@ public class InvoiceController(IJsonDataService jsonDataService) : ControllerBas
     }
 
     [HttpGet("List")]
-    public async Task<ActionResult<List<Invoice>>> GetAllInvoices() => Ok(await _invoiceQuery.GetAllInvoicesAsync());
+    public async Task<ActionResult<List<InvoiceHeader>>> GetAllInvoices() => Ok(await _invoiceQuery.GetAllInvoicesAsync());
 
     [HttpPost]
     public async Task<ActionResult<int>> CreateInvoice([FromBody] InvoiceMutation mutation)
@@ -59,6 +59,17 @@ public class InvoiceController(IJsonDataService jsonDataService) : ControllerBas
         await _invoiceQuery.DeleteAsync(invoiceId);
 
         return NoContent();
+    }
+
+    [HttpGet("Line/{invoiceId}/{lineNumber}")]
+    public async Task<ActionResult<InvoiceLine>> GetInvoiceLineByInvoiceIdAndLineNumber(int invoiceId, int lineNumber)
+    {
+        InvoiceLine? invoiceLine = await _invoiceQuery.GetInvoiceLineByInvoiceIdAndLineNumber(invoiceId, lineNumber);
+        if (invoiceLine is null)
+        {
+            return NotFound();
+        }
+        return Ok(invoiceLine);
     }
 
     [HttpPost("Line/{invoiceId}")]
