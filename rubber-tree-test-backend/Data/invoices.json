@@ -1,0 +1,40 @@
+﻿[
+  {
+    "Id": 1,
+    "CustomerName": "John Doe",
+    "CustomerAddress": "123 Main St, Springfield, IL",
+    "Items": [
+      {
+        "InvoiceId": 1,
+        "LineNumber": 1,
+        "ItemNumber": "A001",
+        "Description": "Widget A",
+        "UnitPrice": 10.00,
+        "Quantity": 2
+      },
+      {
+        "InvoiceId": 1,
+        "LineNumber": 2,
+        "ItemNumber": "B002",
+        "Description": "Widget B",
+        "UnitPrice": 15.00,
+        "Quantity": 1
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "CustomerName": "Jane Smith",
+    "CustomerAddress": "456 Elm St, Springfield, IL",
+    "Items": [
+      {
+        "InvoiceId": 2,
+        "LineNumber": 1,
+        "ItemNumber": "C003",
+        "Description": null,
+        "UnitPrice": 20.00,
+        "Quantity": 3
+      }
+    ]
+  }
+]
