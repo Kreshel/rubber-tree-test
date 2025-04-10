@@ -112,8 +112,26 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
         if (invoice is not null)
         {
-            // perform create action here, the line number should be the next available line number for the invoice
-            // make sure to return the newly created line number if successful
+            // Create a new invoice line item for the specified invoice
+            InvoiceLine line = new()
+            {
+                InvoiceId = invoice.Id,
+                // Assign the next available line number sequentially
+                LineNumber = invoice.Items?.Count > 0 ? invoice.Items.Max(l => l.LineNumber) + 1 : 1,
+                ItemNumber = mutation.ItemNumber,
+                Description = mutation.Description,
+                UnitPrice = mutation.UnitPrice,
+                Quantity = mutation.Quantity
+            };
+
+            // Add the new line to the invoice's Items collection
+            invoice.Items!.Add(line);
+
+            // Save the updated data
+            await jsonDataService.SaveDataAsync("invoices.json", invoices);
+
+            // Return the newly created line number
+            return line.LineNumber;
         }
 
         return null;
@@ -130,7 +148,20 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
         if (invoice is not null)
         {
-            // perform update action here
+            // Find the specified line item in the invoice
+            InvoiceLine? existingLine = invoice.Items?.FirstOrDefault(l => l.LineNumber == lineNumber);
+
+            if (existingLine is not null)
+            {
+                // Update its properties with the values from the mutation object
+                existingLine.ItemNumber = mutation.ItemNumber;
+                existingLine.Description = mutation.Description;
+                existingLine.UnitPrice = mutation.UnitPrice;
+                existingLine.Quantity = mutation.Quantity;
+
+                // Save the changes to the data store
+                await jsonDataService.SaveDataAsync("invoices.json", invoices);
+            }
         }
 
     }
@@ -146,9 +177,24 @@ public class InvoiceQuery(IJsonDataService jsonDataService)
 
         if (invoice is not null)
         {
-            // perform delete action here, remember to re-sequence the line numbers so they remain sequential 
+            // Remove the specified line item from the invoice
+            InvoiceLine? lineToDelete = invoice.Items?.FirstOrDefault(l => l.LineNumber == lineNumber);
 
-            //await jsonDataService.SaveDataAsync("invoices.json", invoices);
+            if (lineToDelete is not null)
+            {
+                invoice.Items?.Remove(lineToDelete);
+
+                // Re - sequence the remaining line numbers to ensure they remain sequential(no gaps)
+                int sequence = 1;
+                foreach (var line in invoice.Items!.OrderBy(l => l.LineNumber))
+                {
+                    line.LineNumber = sequence;
+                    sequence++;
+                }
+
+                // Save the updated data to the data store
+                await jsonDataService.SaveDataAsync("invoices.json", invoices);
+            }
         }
     }
 }
